@@ -802,13 +802,13 @@ const swaggerSpec = swaggerJsdoc({
         },
         ResponseExamples: {
           ListingCreated: {
-            value: { message: 'Listing created', data: { id: '123' } }
+            value: { message: 'Listing created', data: {} }
           },
           PaymentProcessed: {
-            value: { message: 'Payment processed', data: { id: 'pay_123' } }
+            value: { message: 'Payment processed', data: {} }
           },
           BidPlaced: {
-            value: { message: 'Bid placed', data: { amount: 100 } }
+            value: { message: 'Bid placed', data: {} }
           }
         },
         ErrorExamples: {
