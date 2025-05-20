@@ -15,6 +15,8 @@ const { auth } = require('../middleware/auth');
  * /api/payments/create-intent:
  *   post:
  *     summary: Create a payment intent
+ *     description: Creates a new payment intent for processing a payment.
+ *     operationId: createPaymentIntent
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -70,6 +72,8 @@ router.post('/create-intent', auth, paymentController.createPaymentIntent);
  * /api/payments/confirm:
  *   post:
  *     summary: Confirm a payment
+ *     description: Confirms a payment using a payment intent and method.
+ *     operationId: confirmPayment
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -125,6 +129,8 @@ router.post('/confirm', auth, paymentController.confirmPayment);
  * /api/payments/methods:
  *   get:
  *     summary: Get saved payment methods
+ *     description: Retrieves a list of saved payment methods for the user.
+ *     operationId: getPaymentMethods
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -149,6 +155,8 @@ router.post('/confirm', auth, paymentController.confirmPayment);
  *                 $ref: '#/components/examples/ErrorExamples/AuthenticationError'
  *   post:
  *     summary: Save a new payment method
+ *     description: Saves a new payment method for the user.
+ *     operationId: savePaymentMethod
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -204,6 +212,8 @@ router.post('/methods', auth, paymentController.savePaymentMethod);
  * /api/payments/methods/{methodId}:
  *   delete:
  *     summary: Delete a saved payment method
+ *     description: Deletes a saved payment method for the user.
+ *     operationId: deletePaymentMethod
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -252,6 +262,8 @@ router.delete('/methods/:methodId', auth, paymentController.deletePaymentMethod)
  * /api/payments/refund:
  *   post:
  *     summary: Process a payment refund
+ *     description: Processes a refund for a specific payment.
+ *     operationId: processRefund
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
@@ -310,6 +322,8 @@ router.post('/refund', auth, paymentController.processRefund);
  * /api/payments/webhook:
  *   post:
  *     summary: Handle payment provider webhook events
+ *     description: Handles incoming webhook events from payment providers.
+ *     operationId: handlePaymentWebhook
  *     tags: [Payments]
  *     security:
  *       - apiKeyAuth: []
