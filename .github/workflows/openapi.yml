@@ -1,0 +1,80 @@
+name: API Documentation and Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  api-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Export OpenAPI JSON
+        run: npm run export:openapi
+        
+      - name: Lint OpenAPI Spec
+        run: npm run lint:openapi
+        
+      - name: Generate SDKs
+        run: npm run generate:sdk
+        
+      - name: Prepare docs directory
+        run: |
+          mkdir -p docs
+          cp openapi.json docs/
+          cp -r docs/swagger-ui/* docs/
+          mkdir -p docs/sdk
+          cp -r sdk/* docs/sdk/
+          
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          keep_files: true
+          force_orphan: true
+          commit_message: "Update API Documentation and SDKs"
+          
+  api-test:
+    needs: api-docs
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Start API server
+        run: npm start &
+        
+      - name: Wait for server
+        run: sleep 10
+        
+      - name: Run API tests
+        run: npm run test:api 

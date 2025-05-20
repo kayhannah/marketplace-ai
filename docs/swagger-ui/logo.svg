@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lavenderPurple" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B57EDC"/>
+      <stop offset="1" stop-color="#6C3483"/>
+    </linearGradient>
+  </defs>
+  <!-- Z shape -->
+  <path d="M20 30 H100 L20 100 H100" stroke="url(#lavenderPurple)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- P shape (with 2 and b hidden) -->
+  <path d="M40 30 V90 Q40 110 70 90 Q100 70 70 50 Q60 40 40 50" stroke="url(#lavenderPurple)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <!-- Subtle 2 shape inside the P -->
+  <path d="M60 60 Q80 60 70 80 Q60 100 50 80" stroke="#B57EDC" stroke-width="5" fill="none" opacity="0.7"/>
+  <!-- Subtle b shape inside the P -->
+  <ellipse cx="65" cy="75" rx="8" ry="12" fill="#B57EDC" opacity="0.3"/>
+</svg> 

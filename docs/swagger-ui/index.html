@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Marketplace AI API Documentation</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #F3E6FF 0%, #E1C8F7 100%);
+        }
+        .swagger-ui .topbar {
+            background: linear-gradient(90deg, #B57EDC 0%, #6C3483 100%);
+            border-bottom: 4px solid #6C3483;
+            padding: 10px 0;
+        }
+        .swagger-ui .topbar-wrapper img, .swagger-ui .topbar-wrapper svg {
+            height: 48px;
+            margin-right: 16px;
+        }
+        .swagger-ui .topbar-wrapper span {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 8px #6C3483;
+        }
+        .swagger-ui .scheme-container, .swagger-ui .info, .swagger-ui .opblock {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(108,52,131,0.08);
+            background: #F8F3FF;
+        }
+        .swagger-ui .opblock.opblock-get {
+            border-left: 8px solid #B57EDC;
+            background: #F3E6FF;
+        }
+        .swagger-ui .opblock.opblock-post {
+            border-left: 8px solid #6C3483;
+            background: #E1C8F7;
+        }
+        .swagger-ui .opblock.opblock-put {
+            border-left: 8px solid #A259D9;
+            background: #E9D6F7;
+        }
+        .swagger-ui .opblock.opblock-delete {
+            border-left: 8px solid #8F5FAF;
+            background: #F3E6FF;
+        }
+        .swagger-ui .btn {
+            background: linear-gradient(90deg, #B57EDC 0%, #6C3483 100%);
+            color: #fff;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(108,52,131,0.08);
+        }
+        .swagger-ui .btn:hover {
+            background: linear-gradient(90deg, #6C3483 0%, #B57EDC 100%);
+        }
+        .swagger-ui .info .title {
+            color: #6C3483;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .swagger-ui .info .description {
+            color: #8F5FAF;
+            font-size: 1.2rem;
+        }
+        .swagger-ui .markdown code, .swagger-ui pre {
+            background: #E1C8F7;
+            color: #6C3483;
+            border-radius: 6px;
+        }
+        .swagger-ui .download-url-wrapper .download-url-button {
+            background: #B57EDC;
+            color: #fff;
+        }
+        .swagger-ui .download-url-wrapper .download-url-button:hover {
+            background: #6C3483;
+        }
+    </style>
+</head>
+<body>
+    <div class="swagger-ui">
+        <div class="topbar">
+            <div class="topbar-wrapper">
+                <img src="logo.svg" alt="Ze Place Logo" />
+                <span>Ze Place API Docs</span>
+            </div>
+        </div>
+        <div id="swagger-ui"></div>
+    </div>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                url: "openapi.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                docExpansion: "list",
+                defaultModelsExpandDepth: 1,
+                defaultModelExpandDepth: 1,
+                defaultModelRendering: "model",
+                displayRequestDuration: true,
+                filter: true,
+                showExtensions: true,
+                showCommonExtensions: true,
+                syntaxHighlight: {
+                    activated: true,
+                    theme: "monokai"
+                }
+            });
+        };
+    </script>
+</body>
+</html> 

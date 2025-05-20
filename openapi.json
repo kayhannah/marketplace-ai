@@ -1,0 +1,6563 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Marketplace AI API",
+    "version": "1.0.0",
+    "description": "API documentation for the Marketplace AI platform"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key for webhook authentication"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's full name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "description": "User role"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone number"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              }
+            }
+          },
+          "notificationPreferences": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "boolean"
+              },
+              "push": {
+                "type": "boolean"
+              },
+              "sms": {
+                "type": "boolean"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Listing": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Listing ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Listing title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Listing description"
+          },
+          "price": {
+            "type": "number",
+            "description": "Listing price"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "sale",
+              "auction",
+              "rental"
+            ],
+            "description": "Listing type"
+          },
+          "category": {
+            "type": "string",
+            "description": "Listing category"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of image URLs"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "pending",
+              "sold",
+              "cancelled"
+            ],
+            "description": "Listing status"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/User"
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Point"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Order ID"
+          },
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          },
+          "buyer": {
+            "$ref": "#/components/schemas/User"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/User"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled"
+            ],
+            "description": "Order status"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total order amount"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "paid",
+              "refunded",
+              "failed"
+            ],
+            "description": "Payment status"
+          },
+          "shippingAddress": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "zipCode": {
+                "type": "string"
+              }
+            }
+          },
+          "tracking": {
+            "type": "object",
+            "properties": {
+              "carrier": {
+                "type": "string"
+              },
+              "trackingNumber": {
+                "type": "string"
+              },
+              "estimatedDelivery": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Notification ID"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/User"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "order_created",
+              "payment_received",
+              "refund_processed",
+              "auction_ended",
+              "rental_request",
+              "system"
+            ],
+            "description": "Notification type"
+          },
+          "title": {
+            "type": "string",
+            "description": "Notification title"
+          },
+          "message": {
+            "type": "string",
+            "description": "Notification message"
+          },
+          "data": {
+            "type": "object",
+            "description": "Additional notification data"
+          },
+          "read": {
+            "type": "boolean",
+            "description": "Whether the notification has been read"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "description": "Notification priority"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Error status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Validation errors"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of items"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of items per page"
+          }
+        }
+      },
+      "Auction": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auction ID"
+          },
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          },
+          "startPrice": {
+            "type": "number",
+            "description": "Starting price in cents/smallest currency unit"
+          },
+          "currentPrice": {
+            "type": "number",
+            "description": "Current highest bid amount"
+          },
+          "minimumBidIncrement": {
+            "type": "number",
+            "description": "Minimum amount for each bid increment"
+          },
+          "buyNowPrice": {
+            "type": "number",
+            "description": "Optional buy now price"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Auction start time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Auction end time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "ended",
+              "cancelled"
+            ],
+            "description": "Auction status"
+          },
+          "bids": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bidder": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "description": "Array of bids placed"
+          },
+          "winner": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "bidAmount": {
+                "type": "number"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "description": "Winning bid information"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Rental": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Rental ID"
+          },
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          },
+          "renter": {
+            "$ref": "#/components/schemas/User"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/User"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Rental start date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Rental end date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "description": "Rental status"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Total rental amount"
+          },
+          "securityDeposit": {
+            "type": "number",
+            "description": "Security deposit amount"
+          },
+          "specialRequests": {
+            "type": "string",
+            "description": "Any special requests or requirements"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "paid",
+              "refunded",
+              "failed"
+            ],
+            "description": "Payment status"
+          },
+          "extensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "newEndDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "additionalAmount": {
+                  "type": "number"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Rental extension requests"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BidRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Bid amount in cents/smallest currency unit"
+          }
+        }
+      },
+      "RentalRequest": {
+        "type": "object",
+        "required": [
+          "startDate",
+          "endDate"
+        ],
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Rental start date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Rental end date"
+          },
+          "specialRequests": {
+            "type": "string",
+            "description": "Any special requests or requirements"
+          }
+        }
+      },
+      "ExtensionRequest": {
+        "type": "object",
+        "required": [
+          "newEndDate"
+        ],
+        "properties": {
+          "newEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "New rental end date"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for extension"
+          }
+        }
+      },
+      "CancelRequest": {
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Reason for cancellation"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response data"
+          }
+        }
+      },
+      "ListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Array of items"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Payment ID"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Payment amount in cents/smallest currency unit"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Payment currency (e.g., USD)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed",
+              "refunded"
+            ],
+            "description": "Payment status"
+          },
+          "paymentMethod": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "card",
+                  "bank_transfer",
+                  "digital_wallet"
+                ]
+              },
+              "last4": {
+                "type": "string"
+              },
+              "brand": {
+                "type": "string"
+              },
+              "expiryMonth": {
+                "type": "integer"
+              },
+              "expiryYear": {
+                "type": "integer"
+              }
+            }
+          },
+          "relatedEntity": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "order",
+                  "auction",
+                  "rental"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          "refunds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "amount": {
+                  "type": "number"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "completed",
+                    "failed"
+                  ]
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional payment metadata"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Review ID"
+          },
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          },
+          "reviewer": {
+            "$ref": "#/components/schemas/User"
+          },
+          "reviewee": {
+            "$ref": "#/components/schemas/User"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Rating from 1 to 5"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Review comment"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of image URLs"
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "comment": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "helpfulVotes": {
+            "type": "integer",
+            "description": "Number of helpful votes"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WebhookEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique webhook event ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "payment.succeeded",
+              "payment.failed",
+              "payment.refunded",
+              "payment.disputed",
+              "payment.dispute.resolved",
+              "payment.method.added",
+              "payment.method.removed",
+              "auction.created",
+              "auction.started",
+              "auction.ended",
+              "auction.cancelled",
+              "auction.bid_placed",
+              "auction.bid_outbid",
+              "auction.buy_now",
+              "rental.requested",
+              "rental.approved",
+              "rental.rejected",
+              "rental.started",
+              "rental.ended",
+              "rental.cancelled",
+              "rental.extended",
+              "order.created",
+              "order.updated",
+              "order.cancelled",
+              "order.shipped",
+              "order.delivered",
+              "order.returned",
+              "review.created",
+              "review.updated",
+              "review.deleted",
+              "review.flagged",
+              "user.registered",
+              "user.verified",
+              "user.suspended",
+              "user.deleted",
+              "system.maintenance",
+              "system.update",
+              "system.alert"
+            ],
+            "description": "Type of webhook event"
+          },
+          "data": {
+            "type": "object",
+            "description": "Event-specific data"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional event metadata",
+            "properties": {
+              "source": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "environment": {
+                "type": "string"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ComplexResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the operation was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response data"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional response metadata",
+            "properties": {
+              "processingTime": {
+                "type": "number"
+              },
+              "serverTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "pagination": {
+                "$ref": "#/components/schemas/Pagination"
+              },
+              "filters": {
+                "type": "object"
+              },
+              "sorting": {
+                "type": "object"
+              }
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SearchFilters": {
+        "type": "object",
+        "properties": {
+          "priceRange": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "radius": {
+                "type": "number"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "dateRange": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "features": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/admin/dashboard": {
+      "get": {
+        "summary": "Get admin dashboard statistics",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "AnalyticsReport": {
+                    "$ref": "#/components/examples/ComplexScenarios/AnalyticsReport"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "summary": "Get list of users",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "ListResponse": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingCreated"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{userId}": {
+      "patch": {
+        "summary": "Update a user by ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "UserExample": {
+                  "$ref": "#/components/examples/UserExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "UserExample": {
+                    "$ref": "#/components/examples/UserExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user by ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "User deleted",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/listings": {
+      "get": {
+        "summary": "Get list of listings",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "ListResponse": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingCreated"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/listings/{listingId}": {
+      "patch": {
+        "summary": "Update a listing by ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Listing"
+              },
+              "examples": {
+                "ListingExample": {
+                  "$ref": "#/components/examples/ListingExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Listing updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingExample": {
+                    "$ref": "#/components/examples/ListingExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a listing by ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Listing deleted",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/orders": {
+      "get": {
+        "summary": "Get list of orders",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "ListResponse": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingCreated"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/orders/{orderId}": {
+      "patch": {
+        "summary": "Update an order by ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              },
+              "examples": {
+                "OrderExample": {
+                  "$ref": "#/components/examples/OrderExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "OrderExample": {
+                    "$ref": "#/components/examples/OrderExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/notifications": {
+      "post": {
+        "summary": "Create a system notification",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Notification"
+              },
+              "examples": {
+                "NotificationExample": {
+                  "value": {
+                    "title": "System Maintenance",
+                    "message": "Scheduled maintenance at 2am UTC.",
+                    "type": "system",
+                    "priority": "high"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "System notification created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Notification created",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthorizationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthorizationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/bid": {
+      "post": {
+        "summary": "Place a bid on an auction",
+        "tags": [
+          "Auctions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BidRequest"
+              },
+              "examples": {
+                "PlaceBid": {
+                  "$ref": "#/components/examples/RequestExamples/PlaceBid"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bid placed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "BidPlaced": {
+                    "$ref": "#/components/examples/ResponseExamples/BidPlaced"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid bid or auction state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/buy-now": {
+      "post": {
+        "summary": "Buy auction item immediately at buy now price",
+        "tags": [
+          "Auctions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item purchased at buy now price",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Item purchased at buy now price",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid buy now action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/start": {
+      "post": {
+        "summary": "Start an auction",
+        "tags": [
+          "Auctions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auction started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Auction started",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid auction state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/end": {
+      "post": {
+        "summary": "End an auction",
+        "tags": [
+          "Auctions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auction ended",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Auction ended",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid auction state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/cancel": {
+      "post": {
+        "summary": "Cancel an auction",
+        "tags": [
+          "Auctions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              },
+              "examples": {
+                "CancelRequest": {
+                  "value": {
+                    "reason": "Seller withdrew the item."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auction cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Auction cancelled",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid auction state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auctions/{listingId}/status": {
+      "get": {
+        "summary": "Get auction status",
+        "tags": [
+          "Auctions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auction status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auction"
+                },
+                "examples": {
+                  "AuctionExample": {
+                    "$ref": "#/components/examples/AuctionExample"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Auction or listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "User's full name"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "User's password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT authentication token"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "User's password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "JWT authentication token"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email": {
+      "post": {
+        "summary": "Verify user's email",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Email verification token"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "summary": "Request password reset",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "password"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Password reset token"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "New password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh-token": {
+      "post": {
+        "summary": "Refresh authentication token",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "New JWT authentication token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listings": {
+      "get": {
+        "summary": "Get all listings with filtering, search, and pagination",
+        "tags": [
+          "Listings"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sale",
+                "auction",
+                "rental"
+              ]
+            },
+            "description": "Filter by listing type"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by category"
+          },
+          {
+            "in": "query",
+            "name": "minPrice",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum price"
+          },
+          {
+            "in": "query",
+            "name": "maxPrice",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Maximum price"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Keyword search"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "price",
+                "createdAt",
+                "relevance"
+              ]
+            },
+            "description": "Sort by field"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "SearchResults": {
+                    "$ref": "#/components/examples/ComplexScenarios/SearchResults"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new listing",
+        "tags": [
+          "Listings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Listing"
+              },
+              "examples": {
+                "CreateListing": {
+                  "$ref": "#/components/examples/RequestExamples/CreateListing"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Listing created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingCreated": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingCreated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listings/{listingId}": {
+      "get": {
+        "summary": "Get listing by ID",
+        "tags": [
+          "Listings"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingExample": {
+                    "$ref": "#/components/examples/ListingExample"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update listing",
+        "tags": [
+          "Listings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Listing"
+              },
+              "examples": {
+                "UpdateListing": {
+                  "$ref": "#/components/examples/RequestExamples/UpdateListing"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Listing updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingUpdated": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingUpdated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete listing",
+        "tags": [
+          "Listings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Listing deleted successfully",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listings/{listingId}/images": {
+      "post": {
+        "summary": "Add images to listing",
+        "tags": [
+          "Listings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "images"
+                ],
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Images added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingExample": {
+                    "$ref": "#/components/examples/ListingExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete listing image",
+        "tags": [
+          "Listings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          },
+          {
+            "in": "query",
+            "name": "imageUrl",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "URL of the image to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingExample": {
+                    "$ref": "#/components/examples/ListingExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing or image not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "summary": "Get user notifications",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "unread",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter for unread notifications"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by notification type"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Limit number of notifications"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "ListResponse": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingCreated"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/unread/count": {
+      "get": {
+        "summary": "Get count of unread notifications",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unread notification count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "count": 5
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{notificationId}/read": {
+      "patch": {
+        "summary": "Mark a notification as read",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Notification ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Notification marked as read",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notification not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/read/all": {
+      "patch": {
+        "summary": "Mark all notifications as read",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All notifications marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "All notifications marked as read",
+                      "data": {
+                        "count": 10
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/{notificationId}": {
+      "delete": {
+        "summary": "Delete a notification",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Notification ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Notification deleted",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notification not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/preferences": {
+      "get": {
+        "summary": "Get user notification preferences",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "boolean"
+                    },
+                    "push": {
+                      "type": "boolean"
+                    },
+                    "sms": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "email": true,
+                      "push": false,
+                      "sms": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user notification preferences",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "boolean"
+                  },
+                  "push": {
+                    "type": "boolean"
+                  },
+                  "sms": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "examples": {
+                "UpdatePreferences": {
+                  "value": {
+                    "email": true,
+                    "push": true,
+                    "sms": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification preferences updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Preferences updated",
+                      "data": {
+                        "email": true,
+                        "push": true,
+                        "sms": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "summary": "Get user orders with filters and pagination",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled"
+              ]
+            },
+            "description": "Filter by order status"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "SearchResults": {
+                    "$ref": "#/components/examples/ComplexScenarios/SearchResults"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}": {
+      "get": {
+        "summary": "Get order details by ID",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "OrderExample": {
+                    "$ref": "#/components/examples/OrderExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update order status",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "processing",
+                      "shipped",
+                      "delivered",
+                      "cancelled"
+                    ]
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "UpdateOrderStatus": {
+                  "value": {
+                    "status": "shipped",
+                    "note": "Order shipped via FedEx."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingUpdated": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingUpdated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/listings/{listingId}": {
+      "post": {
+        "summary": "Create a new order for a listing",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shippingAddress": {
+                    "$ref": "#/components/schemas/Order/properties/shippingAddress"
+                  },
+                  "paymentMethodId": {
+                    "type": "string",
+                    "description": "Payment method ID"
+                  }
+                }
+              },
+              "examples": {
+                "CreateOrder": {
+                  "value": {
+                    "shippingAddress": {
+                      "street": "123 Main St",
+                      "city": "New York",
+                      "state": "NY",
+                      "country": "USA",
+                      "zipCode": "10001"
+                    },
+                    "paymentMethodId": "pm_1Hh1Y2A3B4C5D6E7F8G9H0"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "OrderExample": {
+                    "$ref": "#/components/examples/OrderExample"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/shipping": {
+      "patch": {
+        "summary": "Update shipping information for an order",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order/properties/shippingAddress"
+              },
+              "examples": {
+                "UpdateShipping": {
+                  "value": {
+                    "street": "456 Elm St",
+                    "city": "Boston",
+                    "state": "MA",
+                    "country": "USA",
+                    "zipCode": "02118"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Shipping information updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "ListingUpdated": {
+                    "$ref": "#/components/examples/ResponseExamples/ListingUpdated"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/refund": {
+      "post": {
+        "summary": "Process a refund for an order",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Refund amount"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Reason for refund"
+                  }
+                }
+              },
+              "examples": {
+                "ProcessRefund": {
+                  "value": {
+                    "amount": 5000,
+                    "reason": "Item not as described"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refund processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "PaymentProcessed": {
+                    "$ref": "#/components/examples/ResponseExamples/PaymentProcessed"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or refund not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "PaymentError": {
+                    "$ref": "#/components/examples/ErrorExamples/PaymentError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/notes": {
+      "post": {
+        "summary": "Add a note to an order",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note": {
+                    "type": "string",
+                    "description": "Note to add to the order"
+                  }
+                }
+              },
+              "examples": {
+                "AddNote": {
+                  "value": {
+                    "note": "Customer requested expedited shipping."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Note added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Note added",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/stats": {
+      "get": {
+        "summary": "Get order statistics",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplexResponse"
+                },
+                "examples": {
+                  "AnalyticsReport": {
+                    "$ref": "#/components/examples/ComplexScenarios/AnalyticsReport"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/create-intent": {
+      "post": {
+        "summary": "Create a payment intent",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "paymentMethod": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "CreatePayment": {
+                  "$ref": "#/components/examples/RequestExamples/CreatePayment"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment intent created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "PaymentExample": {
+                    "$ref": "#/components/examples/PaymentExample"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/confirm": {
+      "post": {
+        "summary": "Confirm a payment",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentIntentId": {
+                    "type": "string"
+                  },
+                  "paymentMethodId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "ConfirmPayment": {
+                  "value": {
+                    "paymentIntentId": "pi_1Hh1Y2A3B4C5D6E7F8G9H0",
+                    "paymentMethodId": "pm_1Hh1Y2A3B4C5D6E7F8G9H0"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment confirmed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "PaymentProcessed": {
+                    "$ref": "#/components/examples/ResponseExamples/PaymentProcessed"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or payment failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "PaymentError": {
+                    "$ref": "#/components/examples/ErrorExamples/PaymentError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/methods": {
+      "get": {
+        "summary": "Get saved payment methods",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of payment methods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "PaymentExample": {
+                    "$ref": "#/components/examples/PaymentExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Save a new payment method",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentMethodId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "SavePaymentMethod": {
+                  "value": {
+                    "paymentMethodId": "pm_1Hh1Y2A3B4C5D6E7F8G9H0"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment method saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Payment method saved",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/methods/{methodId}": {
+      "delete": {
+        "summary": "Delete a saved payment method",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "methodId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Payment method ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment method deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Payment method deleted",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Payment method not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/refund": {
+      "post": {
+        "summary": "Process a payment refund",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentId": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "ProcessRefund": {
+                  "value": {
+                    "paymentId": "pi_1Hh1Y2A3B4C5D6E7F8G9H0",
+                    "amount": 5000,
+                    "reason": "Duplicate charge"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refund processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "PaymentProcessed": {
+                    "$ref": "#/components/examples/ResponseExamples/PaymentProcessed"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or refund not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "PaymentError": {
+                    "$ref": "#/components/examples/ErrorExamples/PaymentError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/webhook": {
+      "post": {
+        "summary": "Handle payment provider webhook events",
+        "tags": [
+          "Payments"
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "PaymentSucceeded": {
+                  "$ref": "#/components/examples/WebhookExamples/PaymentSucceeded"
+                },
+                "PaymentDisputed": {
+                  "$ref": "#/components/examples/WebhookExamples/PaymentDisputed"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook event processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Webhook event processed",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event or signature",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/request": {
+      "post": {
+        "summary": "Request a rental",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalRequest"
+              },
+              "examples": {
+                "RequestRental": {
+                  "$ref": "#/components/examples/RequestExamples/RequestRental"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rental request submitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "RentalRequested": {
+                    "$ref": "#/components/examples/ResponseExamples/RentalRequested"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or rental not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{requestId}/approve": {
+      "post": {
+        "summary": "Approve a rental request",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Rental request ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rental request approved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Rental request approved",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or rental not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rental request not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{requestId}/reject": {
+      "post": {
+        "summary": "Reject a rental request",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Rental request ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              },
+              "examples": {
+                "CancelRequest": {
+                  "value": {
+                    "reason": "Renter did not meet requirements."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rental request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Rental request rejected",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or rental not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rental request not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{rentalId}/extend": {
+      "post": {
+        "summary": "Request a rental extension",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rentalId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Rental ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtensionRequest"
+              },
+              "examples": {
+                "ExtendRental": {
+                  "$ref": "#/components/examples/RequestExamples/ExtendRental"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rental extension requested",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "RentalExtended": {
+                    "$ref": "#/components/examples/ResponseExamples/RentalExtended"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or extension not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rental not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{rentalId}/cancel": {
+      "post": {
+        "summary": "Cancel a rental",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rentalId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Rental ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              },
+              "examples": {
+                "CancelRequest": {
+                  "value": {
+                    "reason": "Renter cancelled due to change of plans."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rental cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Rental cancelled",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or cancellation not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rental not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{rentalId}/status": {
+      "get": {
+        "summary": "Get rental status",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rentalId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Rental ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rental status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rental"
+                },
+                "examples": {
+                  "RentalExample": {
+                    "$ref": "#/components/examples/RentalExample"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rental not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/availability": {
+      "post": {
+        "summary": "Check rental availability and get price",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalRequest"
+              },
+              "examples": {
+                "RequestRental": {
+                  "$ref": "#/components/examples/RequestExamples/RequestRental"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Availability and price information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Available",
+                      "data": {
+                        "available": true,
+                        "price": 5000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/bookings": {
+      "post": {
+        "summary": "Create a rental booking",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalRequest"
+              },
+              "examples": {
+                "RequestRental": {
+                  "$ref": "#/components/examples/RequestExamples/RequestRental"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "RentalRequested": {
+                    "$ref": "#/components/examples/ResponseExamples/RentalRequested"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or booking not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/bookings/{bookingId}/confirm": {
+      "post": {
+        "summary": "Confirm a rental booking",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          },
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking confirmed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Booking confirmed",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid booking or state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/bookings/{bookingId}/cancel": {
+      "post": {
+        "summary": "Cancel a rental booking",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          },
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              },
+              "examples": {
+                "CancelRequest": {
+                  "value": {
+                    "reason": "Customer cancelled due to emergency."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Booking cancelled",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid booking or state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rentals/{listingId}/bookings/{bookingId}/complete": {
+      "post": {
+        "summary": "Complete a rental",
+        "tags": [
+          "Rentals"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "listingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Listing ID"
+          },
+          {
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Booking ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rental completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Rental completed",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid booking or state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidStateError": {
+                    "$ref": "#/components/examples/ErrorExamples/InvalidStateError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFoundError": {
+                    "$ref": "#/components/examples/ErrorExamples/NotFoundError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "summary": "Get user profile",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "UserExample": {
+                    "$ref": "#/components/examples/UserExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user profile",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "UserExample": {
+                  "$ref": "#/components/examples/UserExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "UserExample": {
+                    "$ref": "#/components/examples/UserExample"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/change-password": {
+      "post": {
+        "summary": "Change user password",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "currentPassword": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "ChangePassword": {
+                  "value": {
+                    "currentPassword": "oldpassword123",
+                    "newPassword": "newpassword456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Password changed",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or current password incorrect",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/notifications": {
+      "get": {
+        "summary": "Get user notification preferences",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "boolean"
+                    },
+                    "push": {
+                      "type": "boolean"
+                    },
+                    "sms": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "email": true,
+                      "push": false,
+                      "sms": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user notification preferences",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "boolean"
+                  },
+                  "push": {
+                    "type": "boolean"
+                  },
+                  "sms": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "examples": {
+                "UpdatePreferences": {
+                  "value": {
+                    "email": true,
+                    "push": true,
+                    "sms": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification preferences updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "examples": {
+                  "SuccessResponse": {
+                    "value": {
+                      "message": "Preferences updated",
+                      "data": {
+                        "email": true,
+                        "push": true,
+                        "sms": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "ValidationError": {
+                    "$ref": "#/components/examples/ErrorExamples/ValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "AuthenticationError": {
+                    "$ref": "#/components/examples/ErrorExamples/AuthenticationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "Admin dashboard and management"
+    },
+    {
+      "name": "Auctions",
+      "description": "Auction management and bidding"
+    },
+    {
+      "name": "Listings",
+      "description": "Listing management and search"
+    },
+    {
+      "name": "Notifications",
+      "description": "User notifications and preferences"
+    },
+    {
+      "name": "Orders",
+      "description": "Order management and tracking"
+    },
+    {
+      "name": "Payments",
+      "description": "Payment processing and management"
+    },
+    {
+      "name": "Rentals",
+      "description": "Rental management and requests"
+    },
+    {
+      "name": "Users",
+      "description": "User profile and preferences management"
+    }
+  ]
+}
