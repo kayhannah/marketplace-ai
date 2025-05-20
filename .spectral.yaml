@@ -1,2 +1,3 @@
+# Spectral ruleset for OpenAPI linting
 extends: "spectral:oas"
 rules: {} 
