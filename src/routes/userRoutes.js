@@ -125,7 +125,7 @@ router.patch('/profile', userController.updateProfile);
  *               SuccessResponse:
  *                 value:
  *                   message: Password changed
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid input or current password incorrect
  *         content:

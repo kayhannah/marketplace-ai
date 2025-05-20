@@ -186,7 +186,7 @@ router.get('/users', adminController.getUsers);
  *               SuccessResponse:
  *                 value:
  *                   message: User deleted
- *                   data: null
+ *                   data: {}
  *       401:
  *         description: Unauthorized
  *         content:
@@ -360,7 +360,7 @@ router.post('/notifications', adminController.createSystemNotification);
  *               SuccessResponse:
  *                 value:
  *                   message: Listing deleted
- *                   data: null
+ *                   data: {}
  *       401:
  *         description: Unauthorized
  *         content:
@@ -525,7 +525,7 @@ router.post('/notifications', adminController.createSystemNotification);
  *               SuccessResponse:
  *                 value:
  *                   message: Notification created
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid input
  *         content:

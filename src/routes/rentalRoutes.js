@@ -100,7 +100,7 @@ router.post('/:listingId/request', auth, rentalController.requestRental);
  *               SuccessResponse:
  *                 value:
  *                   message: Rental request approved
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid request or rental not allowed
  *         content:
@@ -167,7 +167,7 @@ router.post('/:requestId/approve', auth, rentalController.approveRental);
  *               SuccessResponse:
  *                 value:
  *                   message: Rental request rejected
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid request or rental not allowed
  *         content:
@@ -298,7 +298,7 @@ router.post('/:rentalId/extend', auth, rentalController.requestExtension);
  *               SuccessResponse:
  *                 value:
  *                   message: Rental cancelled
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid request or cancellation not allowed
  *         content:
@@ -522,7 +522,7 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  *               SuccessResponse:
  *                 value:
  *                   message: Booking confirmed
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid booking or state
  *         content:
@@ -591,7 +591,7 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  *               SuccessResponse:
  *                 value:
  *                   message: Booking cancelled
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid booking or state
  *         content:
@@ -650,7 +650,7 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  *               SuccessResponse:
  *                 value:
  *                   message: Rental completed
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid booking or state
  *         content:

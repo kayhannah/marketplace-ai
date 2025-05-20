@@ -100,7 +100,7 @@ router.post('/:listingId/bid', auth, auctionController.placeBid);
  *               SuccessResponse:
  *                 value:
  *                   message: Item purchased at buy now price
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid buy now action
  *         content:
@@ -157,7 +157,7 @@ router.post('/:listingId/buy-now', auth, auctionController.buyNow);
  *               SuccessResponse:
  *                 value:
  *                   message: Auction started
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid auction state
  *         content:
@@ -214,7 +214,7 @@ router.post('/:listingId/start', auth, auctionController.startAuction);
  *               SuccessResponse:
  *                 value:
  *                   message: Auction ended
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid auction state
  *         content:
@@ -281,7 +281,7 @@ router.post('/:listingId/end', auth, auctionController.endAuction);
  *               SuccessResponse:
  *                 value:
  *                   message: Auction cancelled
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid auction state
  *         content:

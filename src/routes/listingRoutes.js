@@ -239,7 +239,7 @@ router.post('/', auth, upload.array('images', 5), listingController.createListin
  *               SuccessResponse:
  *                 value:
  *                   message: Listing deleted successfully
- *                   data: null
+ *                   data: {}
  *       401:
  *         description: Unauthorized
  *         content:
