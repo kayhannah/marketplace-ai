@@ -184,7 +184,7 @@ router.post('/confirm', auth, paymentController.confirmPayment);
  *               SuccessResponse:
  *                 value:
  *                   message: Payment method saved
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid input
  *         content:
@@ -235,7 +235,7 @@ router.post('/methods', auth, paymentController.savePaymentMethod);
  *               SuccessResponse:
  *                 value:
  *                   message: Payment method deleted
- *                   data: null
+ *                   data: {}
  *       401:
  *         description: Unauthorized
  *         content:
@@ -349,7 +349,7 @@ router.post('/refund', auth, paymentController.processRefund);
  *               SuccessResponse:
  *                 value:
  *                   message: Webhook event processed
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid event or signature
  *         content:
