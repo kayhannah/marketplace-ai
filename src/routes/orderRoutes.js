@@ -400,7 +400,7 @@ const { auth } = require('../middleware/auth');
  *               SuccessResponse:
  *                 value:
  *                   message: Note added
- *                   data: null
+ *                   data: {}
  *       400:
  *         description: Invalid input
  *         content:
@@ -455,31 +455,31 @@ const { auth } = require('../middleware/auth');
  *               AuthenticationError:
  *                 $ref: '#/components/examples/ErrorExamples/AuthenticationError'
  */
-router.get('/', auth, orderController.getOrders);
+router.get('/', auth, orderController.getOrders).description('Retrieves a list of all orders with optional filters.');
 
-router.get('/:orderId', auth, orderController.getOrder);
+router.get('/:orderId', auth, orderController.getOrder).description('Retrieves details of a specific order.');
 
-router.post('/:orderId/cancel', auth, orderController.cancelOrder);
+router.post('/:orderId/cancel', auth, orderController.cancelOrder).description('Cancels a specific order.');
 
-router.post('/:orderId/tracking', auth, orderController.updateTracking);
+router.post('/:orderId/tracking', auth, orderController.updateTracking).description('Updates the tracking information for a specific order.');
 
-router.patch('/:orderId/status', auth, orderController.updateStatus);
+router.patch('/:orderId/status', auth, orderController.updateStatus).description('Updates the status of a specific order.');
 
-router.post('/:orderId/review', auth, orderController.submitReview);
+router.post('/:orderId/review', auth, orderController.submitReview).description('Submits a review for a specific order.');
 
 // Create a new order
-router.post('/listings/:listingId', orderController.createOrder);
+router.post('/listings/:listingId', orderController.createOrder).description('Creates a new order for a specific listing.');
 
 // Update shipping information
-router.patch('/:orderId/shipping', orderController.updateShipping);
+router.patch('/:orderId/shipping', orderController.updateShipping).description('Updates the shipping information for a specific order.');
 
 // Process refund
-router.post('/:orderId/refund', orderController.processRefund);
+router.post('/:orderId/refund', orderController.processRefund).description('Processes a refund for a specific order.');
 
 // Add note to order
-router.post('/:orderId/notes', orderController.addNote);
+router.post('/:orderId/notes', orderController.addNote).description('Adds a note to a specific order.');
 
 // Get order statistics
-router.get('/stats', orderController.getOrderStats);
+router.get('/stats', orderController.getOrderStats).description('Retrieves statistics about orders.');
 
 module.exports = router; 
