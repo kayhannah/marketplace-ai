@@ -9,7 +9,7 @@
     "export:openapi": "node -e \"const spec = require('./src/config/swagger'); require('fs').writeFileSync('openapi.json', JSON.stringify(spec, null, 2));\"",
     "test:api": "dredd openapi.json http://localhost:3000",
     "generate:sdk": "openapi-generator-cli generate -i openapi.json -g javascript -o ./sdk/js && openapi-generator-cli generate -i openapi.json -g python -o ./sdk/python",
-    "lint:openapi": "spectral lint openapi.json"
+    "lint:openapi": "spectral lint --ruleset=oas openapi.json"
   },
   "keywords": [],
   "author": "",
