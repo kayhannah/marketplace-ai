@@ -791,6 +791,76 @@ const swaggerSpec = swaggerJsdoc({
           },
         },
       },
+      examples: {
+        ComplexScenarios: {
+          AnalyticsReport: {
+            value: { report: 'Sample analytics report' }
+          },
+          SearchResults: {
+            value: { results: [] }
+          }
+        },
+        ResponseExamples: {
+          ListingCreated: {
+            value: { message: 'Listing created', data: { id: '123' } }
+          },
+          PaymentProcessed: {
+            value: { message: 'Payment processed', data: { id: 'pay_123' } }
+          },
+          BidPlaced: {
+            value: { message: 'Bid placed', data: { amount: 100 } }
+          }
+        },
+        ErrorExamples: {
+          AuthenticationError: {
+            value: { status: 'error', message: 'Authentication failed' }
+          },
+          AuthorizationError: {
+            value: { status: 'error', message: 'Not authorized' }
+          },
+          NotFoundError: {
+            value: { status: 'error', message: 'Resource not found' }
+          },
+          ValidationError: {
+            value: { status: 'error', message: 'Validation failed', errors: [] }
+          },
+          InvalidStateError: {
+            value: { status: 'error', message: 'Invalid state' }
+          },
+          PaymentError: {
+            value: { status: 'error', message: 'Payment failed' }
+          }
+        },
+        RequestExamples: {
+          PlaceBid: {
+            value: { amount: 100 }
+          },
+          UpdateListing: {
+            value: { title: 'Updated title', price: 200 }
+          },
+          CreatePayment: {
+            value: { amount: 1000, currency: 'USD', paymentMethod: 'card' }
+          },
+          RequestRental: {
+            value: { startDate: '2024-01-01', endDate: '2024-01-07' }
+          }
+        },
+        ListingExample: {
+          value: { _id: 'listing123', title: 'Sample Listing', price: 100 }
+        },
+        UserExample: {
+          value: { _id: 'user123', name: 'Sample User', email: 'user@example.com' }
+        },
+        OrderExample: {
+          value: { _id: 'order123', status: 'pending', totalAmount: 100 }
+        },
+        PaymentExample: {
+          value: { _id: 'pay123', amount: 100, status: 'completed' }
+        },
+        AuctionExample: {
+          value: { _id: 'auction123', status: 'active', currentPrice: 100 }
+        }
+      },
     },
     security: [
       {
