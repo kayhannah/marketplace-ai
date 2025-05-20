@@ -15,6 +15,8 @@ const { auth } = require('../middleware/auth');
  * /api/auctions/{listingId}/bid:
  *   post:
  *     summary: Place a bid on an auction
+ *     description: Places a bid on an active auction listing.
+ *     operationId: placeBid
  *     tags: [Auctions]
  *     security:
  *       - bearerAuth: []
@@ -79,6 +81,8 @@ router.post('/:listingId/bid', auth, auctionController.placeBid);
  * /api/auctions/{listingId}/buy-now:
  *   post:
  *     summary: Buy auction item immediately at buy now price
+ *     description: Purchases the auction item at the buy now price.
+ *     operationId: buyNow
  *     tags: [Auctions]
  *     security:
  *       - bearerAuth: []
@@ -136,6 +140,8 @@ router.post('/:listingId/buy-now', auth, auctionController.buyNow);
  * /api/auctions/{listingId}/start:
  *   post:
  *     summary: Start an auction
+ *     description: Starts an auction for a listing.
+ *     operationId: startAuction
  *     tags: [Auctions]
  *     security:
  *       - bearerAuth: []
@@ -193,6 +199,8 @@ router.post('/:listingId/start', auth, auctionController.startAuction);
  * /api/auctions/{listingId}/end:
  *   post:
  *     summary: End an auction
+ *     description: Ends an active auction for a listing.
+ *     operationId: endAuction
  *     tags: [Auctions]
  *     security:
  *       - bearerAuth: []
@@ -250,6 +258,8 @@ router.post('/:listingId/end', auth, auctionController.endAuction);
  * /api/auctions/{listingId}/cancel:
  *   post:
  *     summary: Cancel an auction
+ *     description: Cancels an active auction for a listing.
+ *     operationId: cancelAuction
  *     tags: [Auctions]
  *     security:
  *       - bearerAuth: []
@@ -317,6 +327,8 @@ router.post('/:listingId/cancel', auth, auctionController.cancelAuction);
  * /api/auctions/{listingId}/status:
  *   get:
  *     summary: Get auction status
+ *     description: Retrieves the status of a specific auction.
+ *     operationId: getAuctionStatus
  *     tags: [Auctions]
  *     parameters:
  *       - in: path

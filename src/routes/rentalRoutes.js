@@ -15,6 +15,8 @@ const { auth } = require('../middleware/auth');
  * /api/rentals/{listingId}/request:
  *   post:
  *     summary: Request a rental
+ *     description: Submits a rental request for a listing.
+ *     operationId: requestRental
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -79,6 +81,8 @@ router.post('/:listingId/request', auth, rentalController.requestRental);
  * /api/rentals/{requestId}/approve:
  *   post:
  *     summary: Approve a rental request
+ *     description: Approves a pending rental request.
+ *     operationId: approveRental
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -136,6 +140,8 @@ router.post('/:requestId/approve', auth, rentalController.approveRental);
  * /api/rentals/{requestId}/reject:
  *   post:
  *     summary: Reject a rental request
+ *     description: Rejects a pending rental request.
+ *     operationId: rejectRental
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -203,6 +209,8 @@ router.post('/:requestId/reject', auth, rentalController.rejectRental);
  * /api/rentals/{rentalId}/extend:
  *   post:
  *     summary: Request a rental extension
+ *     description: Requests an extension for an active rental.
+ *     operationId: requestExtension
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -267,6 +275,8 @@ router.post('/:rentalId/extend', auth, rentalController.requestExtension);
  * /api/rentals/{rentalId}/cancel:
  *   post:
  *     summary: Cancel a rental
+ *     description: Cancels an active rental.
+ *     operationId: cancelRental
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -334,6 +344,8 @@ router.post('/:rentalId/cancel', auth, rentalController.cancelRental);
  * /api/rentals/{rentalId}/status:
  *   get:
  *     summary: Get rental status
+ *     description: Retrieves the status of a specific rental.
+ *     operationId: getRentalStatus
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -371,6 +383,8 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  * /api/rentals/{listingId}/availability:
  *   post:
  *     summary: Check rental availability and get price
+ *     description: Checks if a listing is available for rental and returns the price.
+ *     operationId: checkAvailability
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -435,6 +449,8 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  * /api/rentals/{listingId}/bookings:
  *   post:
  *     summary: Create a rental booking
+ *     description: Creates a new booking for a rental listing.
+ *     operationId: createBooking
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -495,6 +511,8 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  * /api/rentals/{listingId}/bookings/{bookingId}/confirm:
  *   post:
  *     summary: Confirm a rental booking
+ *     description: Confirms a booking for a rental listing.
+ *     operationId: confirmBooking
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -554,6 +572,8 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  * /api/rentals/{listingId}/bookings/{bookingId}/cancel:
  *   post:
  *     summary: Cancel a rental booking
+ *     description: Cancels a booking for a rental listing.
+ *     operationId: cancelBooking
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []
@@ -623,6 +643,8 @@ router.get('/:rentalId/status', auth, rentalController.getRentalStatus);
  * /api/rentals/{listingId}/bookings/{bookingId}/complete:
  *   post:
  *     summary: Complete a rental
+ *     description: Marks a rental as completed.
+ *     operationId: completeRental
  *     tags: [Rentals]
  *     security:
  *       - bearerAuth: []

@@ -16,6 +16,8 @@ const upload = require('../middleware/upload');
  * /api/listings:
  *   get:
  *     summary: Get all listings with filtering, search, and pagination
+ *     description: Retrieves all listings with optional filters, search, and pagination.
+ *     operationId: getListings
  *     tags: [Listings]
  *     parameters:
  *       - in: query
@@ -82,6 +84,8 @@ const upload = require('../middleware/upload');
  *
  *   post:
  *     summary: Create a new listing
+ *     description: Creates a new listing in the marketplace.
+ *     operationId: createListing
  *     tags: [Listings]
  *     security:
  *       - bearerAuth: []
@@ -131,6 +135,8 @@ router.post('/', auth, upload.array('images', 5), listingController.createListin
  * /api/listings/{listingId}:
  *   get:
  *     summary: Get listing by ID
+ *     description: Retrieves a listing by its unique ID.
+ *     operationId: getListing
  *     tags: [Listings]
  *     parameters:
  *       - in: path
@@ -160,6 +166,8 @@ router.post('/', auth, upload.array('images', 5), listingController.createListin
  *                 $ref: '#/components/examples/ErrorExamples/NotFoundError'
  *   patch:
  *     summary: Update listing
+ *     description: Updates the details of a specific listing.
+ *     operationId: updateListing
  *     tags: [Listings]
  *     security:
  *       - bearerAuth: []
@@ -218,6 +226,8 @@ router.post('/', auth, upload.array('images', 5), listingController.createListin
  *                 $ref: '#/components/examples/ErrorExamples/NotFoundError'
  *   delete:
  *     summary: Delete listing
+ *     description: Deletes a specific listing from the marketplace.
+ *     operationId: deleteListing
  *     tags: [Listings]
  *     security:
  *       - bearerAuth: []
@@ -268,6 +278,8 @@ router.delete('/:listingId', auth, listingController.deleteListing);
  * /api/listings/{listingId}/images:
  *   post:
  *     summary: Add images to listing
+ *     description: Adds images to a specific listing.
+ *     operationId: addListingImages
  *     tags: [Listings]
  *     security:
  *       - bearerAuth: []
@@ -322,6 +334,8 @@ router.delete('/:listingId', auth, listingController.deleteListing);
  *                 $ref: '#/components/examples/ErrorExamples/NotFoundError'
  *   delete:
  *     summary: Delete listing image
+ *     description: Deletes an image from a specific listing.
+ *     operationId: deleteListingImage
  *     tags: [Listings]
  *     security:
  *       - bearerAuth: []

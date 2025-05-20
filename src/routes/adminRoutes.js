@@ -18,6 +18,8 @@ router.use(admin);
  * /api/admin/dashboard:
  *   get:
  *     summary: Get admin dashboard statistics
+ *     description: Retrieves statistics for the admin dashboard.
+ *     operationId: getAdminDashboard
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -57,6 +59,8 @@ router.get('/dashboard', adminController.getDashboardStats);
  * /api/admin/users:
  *   get:
  *     summary: Get list of users
+ *     description: Retrieves a paginated list of users for admin management.
+ *     operationId: getAdminUsers
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -107,6 +111,8 @@ router.get('/users', adminController.getUsers);
  * /api/admin/users/{userId}:
  *   patch:
  *     summary: Update a user by ID
+ *     description: Updates a user's information by their unique ID.
+ *     operationId: updateAdminUser
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -165,6 +171,8 @@ router.get('/users', adminController.getUsers);
  *                 $ref: '#/components/examples/ErrorExamples/NotFoundError'
  *   delete:
  *     summary: Delete a user by ID
+ *     description: Deletes a user by their unique ID.
+ *     operationId: deleteAdminUser
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -235,6 +243,8 @@ router.post('/notifications', adminController.createSystemNotification);
  * /api/admin/listings:
  *   get:
  *     summary: Get list of listings
+ *     description: Retrieves a paginated list of listings for admin management.
+ *     operationId: getAdminListings
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -281,6 +291,8 @@ router.post('/notifications', adminController.createSystemNotification);
  * /api/admin/listings/{listingId}:
  *   patch:
  *     summary: Update a listing by ID
+ *     description: Updates a listing's information by its unique ID.
+ *     operationId: updateAdminListing
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -339,6 +351,8 @@ router.post('/notifications', adminController.createSystemNotification);
  *                 $ref: '#/components/examples/ErrorExamples/NotFoundError'
  *   delete:
  *     summary: Delete a listing by ID
+ *     description: Deletes a listing by its unique ID.
+ *     operationId: deleteAdminListing
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -392,6 +406,8 @@ router.post('/notifications', adminController.createSystemNotification);
  * /api/admin/orders:
  *   get:
  *     summary: Get list of orders
+ *     description: Retrieves a paginated list of orders for admin management.
+ *     operationId: getAdminOrders
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -438,6 +454,8 @@ router.post('/notifications', adminController.createSystemNotification);
  * /api/admin/orders/{orderId}:
  *   patch:
  *     summary: Update an order by ID
+ *     description: Updates an order's information by its unique ID.
+ *     operationId: updateAdminOrder
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -498,6 +516,8 @@ router.post('/notifications', adminController.createSystemNotification);
  * /api/admin/notifications:
  *   post:
  *     summary: Create a system notification
+ *     description: Creates a new system notification for all users.
+ *     operationId: createSystemNotification
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []

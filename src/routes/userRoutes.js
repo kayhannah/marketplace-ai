@@ -22,6 +22,8 @@ router.use(auth);
  * /api/users/profile:
  *   get:
  *     summary: Get user profile
+ *     description: Returns the authenticated user's profile information.
+ *     operationId: getUserProfile
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -46,6 +48,8 @@ router.use(auth);
  *                 $ref: '#/components/examples/ErrorExamples/AuthenticationError'
  *   patch:
  *     summary: Update user profile
+ *     description: Updates the authenticated user's profile information.
+ *     operationId: updateUserProfile
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -95,6 +99,8 @@ router.patch('/profile', userController.updateProfile);
  * /api/users/change-password:
  *   post:
  *     summary: Change user password
+ *     description: Changes the password for the authenticated user.
+ *     operationId: changeUserPassword
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -152,6 +158,8 @@ router.post('/change-password', userController.changePassword);
  * /api/users/notifications:
  *   get:
  *     summary: Get user notification preferences
+ *     description: Retrieves the notification preferences for the authenticated user.
+ *     operationId: getUserNotifications
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -186,6 +194,8 @@ router.post('/change-password', userController.changePassword);
  *                 $ref: '#/components/examples/ErrorExamples/AuthenticationError'
  *   patch:
  *     summary: Update user notification preferences
+ *     description: Updates the notification preferences for the authenticated user.
+ *     operationId: updateUserNotifications
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
