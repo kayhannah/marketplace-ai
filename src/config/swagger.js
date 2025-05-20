@@ -809,6 +809,12 @@ const swaggerSpec = swaggerJsdoc({
           },
           BidPlaced: {
             value: { message: 'Bid placed', data: {} }
+          },
+          RentalRequested: {
+            value: { message: 'Rental requested', data: { rentalId: 'rental_123' } }
+          },
+          RentalExtended: {
+            value: { message: 'Rental extended', data: { newEndDate: '2024-01-14' } }
           }
         },
         ErrorExamples: {
@@ -843,6 +849,9 @@ const swaggerSpec = swaggerJsdoc({
           },
           RequestRental: {
             value: { startDate: '2024-01-01', endDate: '2024-01-07' }
+          },
+          ExtendRental: {
+            value: { newEndDate: '2024-01-14', reason: 'Need more time' }
           }
         },
         ListingExample: {
@@ -859,6 +868,44 @@ const swaggerSpec = swaggerJsdoc({
         },
         AuctionExample: {
           value: { _id: 'auction123', status: 'active', currentPrice: 100 }
+        },
+        RentalExample: {
+          value: {
+            _id: 'rental_123',
+            listing: 'listing_123',
+            renter: 'user_123',
+            owner: 'user_456',
+            startDate: '2024-01-01T10:00:00Z',
+            endDate: '2024-01-07T10:00:00Z',
+            status: 'active',
+            totalAmount: 500,
+            securityDeposit: 100,
+            specialRequests: '',
+            paymentStatus: 'paid',
+            extensions: [],
+            createdAt: '2024-01-01T09:00:00Z',
+            updatedAt: '2024-01-01T09:00:00Z'
+          }
+        },
+        WebhookExamples: {
+          PaymentSucceeded: {
+            value: {
+              id: 'evt_123',
+              type: 'payment.succeeded',
+              data: { paymentId: 'pay_123', amount: 1000 },
+              metadata: { source: 'stripe', version: '2024-06', environment: 'test' },
+              createdAt: '2024-06-01T12:00:00Z'
+            }
+          },
+          PaymentDisputed: {
+            value: {
+              id: 'evt_456',
+              type: 'payment.disputed',
+              data: { paymentId: 'pay_456', reason: 'fraud' },
+              metadata: { source: 'stripe', version: '2024-06', environment: 'test' },
+              createdAt: '2024-06-01T13:00:00Z'
+            }
+          }
         }
       },
     },
